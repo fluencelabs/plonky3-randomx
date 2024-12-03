@@ -98,9 +98,9 @@ fn main() -> Result<(), impl Debug> {
     verify(&config, &randomx_air, &mut challenger, &proof, &vec![])?;
 
     let mut wrap_prover = RecursiveProver::<Val>::new();
-    let mut wrap_challenger = Challenger::from_hasher(vec![], byte_hash);
-    let rec_trace = generate_recursive_proover_trace(&mut wrap_prover, &randomx_air, &cli, &config, &mut wrap_challenger, &proof, &vec![]);
-
+    // let mut wrap_challenger = Challenger::from_hasher(vec![], byte_hash);
+    let mut challenger = Challenger::from_hasher(vec![], byte_hash);
+    let rec_trace = generate_recursive_proover_trace(&mut wrap_prover, &randomx_air, &cli, &config, &mut challenger, &proof, &vec![]);
 
     // let mut rng = rand::thread_rng();
     // let mut wrap_perm = Poseidon2::new_from_rng(8, 22,& mut rng);
@@ -113,7 +113,8 @@ fn main() -> Result<(), impl Debug> {
     // let mut wrap_challenger:
     // type RecChallenger = MultiField32Challenger<Mersenne31, Bn254Fr, Poseidon2<Bn254Fr, Poseidon2ExternalMatrixGeneral, DiffusionMatrixBN254, 3, 5>, 3, 2>;
     // pub type OuterPcs = TwoAdicFriPcs<OuterVal, OuterDft, OuterValMmcs, OuterChallengeMmcs>;
-    let rec_proof = prove(&config, &wrap_prover, &mut wrap_challenger, rec_trace, &vec![]);
+    let mut challenger = Challenger::from_hasher(vec![], byte_hash);
+    let rec_proof = prove(&config, &wrap_prover, &mut challenger, rec_trace, &vec![]);
     println!("Proof commitments: {:#?}", serde_json::to_string(&rec_proof).unwrap().len());
 
     let mut file = File::create("short.proof").expect("Could not create file!");

@@ -3,8 +3,8 @@ use std::ops::Neg;
 use p3_air::{Air, AirBuilder, BaseAir};
 use p3_field::Field;
 use p3_matrix::Matrix;
-use p3_field::AbstractField;
-
+// use p3_field::AbstractField;
+use p3_field::FieldAlgebra;
 
 use crate::{register::RegFile, stark_primitives::{BIN_OP_ROW_SIZE, CARRY, CARRY_START, LEFT_ARG, RESULT, RIGHT_ARG, WORD_SIZE}};
 
@@ -39,7 +39,7 @@ pub fn eval_add<AB: AirBuilder>(builder: &mut AB, is_real: AB::Var) {
     // let next = main.row_slice(1);
 
     let base = AB::F::from_canonical_u32(256);
-    let one = AB::F::one();
+    let one = AB::F::ONE;
     let mut is_real = builder.when(is_real);
 
     // left = local[11..19];
@@ -115,16 +115,16 @@ impl<AB: AirBuilder> Air<AB> for I64MathOp<AB::F> {
 }
 
 pub fn populate_flags<F: Field>(op: I64MathOps) -> Vec<F> {
-    let mut flags = vec![F::zero(); 10];
+    let mut flags = vec![F::ZERO; 10];
     match op {
         I64MathOps::Add => {
-            flags[0] = F::one();
+            flags[0] = F::ONE;
         }
         I64MathOps::Sub => {
-            flags[1] = F::one();
+            flags[1] = F::ONE;
         }
         I64MathOps::Mul => {
-            flags[2] = F::one();
+            flags[2] = F::ONE;
         }
     }
     flags
@@ -164,10 +164,10 @@ pub fn populate_add_trace_record<F: Field>(
     let mut prev_carry_value = 0u8;
     for i in 0..CARRY {
         if (left_as_b[i] as u32) + (right_as_b[i] as u32) + (prev_carry_value as u32) > 255 {
-            trace_record.push(F::one());
+            trace_record.push(F::ONE);
             prev_carry_value = 1;
         } else {
-            trace_record.push(F::zero());
+            trace_record.push(F::ZERO);
             prev_carry_value = 0;
         };
     }
@@ -210,8 +210,8 @@ pub fn test_add<Val: Field>() -> I64MathOp<Val> {
         op: I64MathOps::Add,
         left_arg: 0,
         right_arg: 1,
-        carry: [Val::zero(); 7],
-        res: [Val::zero(); 8],
+        carry: [Val::ZERO; 7],
+        res: [Val::ZERO; 8],
         left_reg_idx: 0,
         right_reg_idx: 1,
         res_reg_idx: 0,
@@ -223,8 +223,8 @@ pub fn test_sub<Val: Field>() -> I64MathOp<Val> {
         op: I64MathOps::Sub,
         left_arg: 0,
         right_arg: 1,
-        carry: [Val::zero(); 7],
-        res: [Val::zero(); 8],
+        carry: [Val::ZERO; 7],
+        res: [Val::ZERO; 8],
         left_reg_idx: 0,
         right_reg_idx: 1,
         res_reg_idx: 0,
